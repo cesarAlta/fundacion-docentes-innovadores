@@ -1,4 +1,4 @@
-@startuml fdi-c4-container32
+@startuml C4_Container
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
 title Container diagram for FDI DoneSystem
