@@ -1,0 +1,27 @@
+@startuml fdi-c4-container32
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Container diagram for FDI DoneSystem
+
+Person(user, "Usuario, Docente, Administrador que usa el sistema FDI")
+
+System_Boundary(fdi, "FDI DoneSystem") {
+    Container(frontend, "Frontend Web", "Angular, Netlify", "Proporciona funcionalidades del sistema FDI via navegador web")
+    Container(backend, "API Backend", "Spring Boot", "Proporciona funcionalidades de negocio via REST API")
+    ContainerDb(mysql, "Base de Datos", "MySQL", "Almacena información de usuarios, cursos y transacciones")
+}
+
+System_Ext(moodle, "Moodle (Bitnami)", "Plataforma de gestión de aprendizaje (LMS) en Docker con su propia BD.")
+SystemDb_Ext(moodledb, "Moodle Database", "Base de datos del sistema Moodle")
+System_Ext(mpago, "Mercado Pago", "Plataforma de procesamiento de pagos")
+System_Ext(mail_service, "Servicio de Correo", "Envía notificaciones.")
+
+Rel(user, frontend, "Usa", "HTTPS")
+Rel(frontend, backend, "Hace llamadas API", "JSON/HTTPS")
+Rel(backend, mysql, "Lee/Escribe", "JDBC")
+Rel(backend, moodle, "Integra con", "REST API/HTTP")
+Rel(backend, mpago, "Procesa pagos", "REST API/HTTPS")
+Rel(backend, mail_service, "Envía notificaciones con", "SMTP")
+Rel(moodle, moodledb, "Lee/Escribe", "SQL")
+
+@enduml
