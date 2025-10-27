@@ -1,0 +1,18 @@
+@startuml C4_Context
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title Diagrama de Contexto para el Sistema de Aprendizaje y Compras
+
+Person(usuario, "Usuario", "Estudiante, administrador, profesor")
+System(sistema, "Sistema de Aprendizaje y Compras", "Permite la gestión de cursos, el aprendizaje y la compra de productos.")
+System_Ext(mercadopago, "Mercado Pago", "Plataforma de procesamiento de pagos.")
+System_Ext(moodle, "Moodle (Bitnami)", "Plataforma de gestión de aprendizaje (LMS) alojada en Docker.")
+System_Ext(mail_service, "Servicio de Correo", "Envía notificaciones por correo electrónico.")
+
+Rel(usuario, sistema, "Usa")
+Rel(sistema, mercadopago, "Integra pagos con", "HTTPS")
+Rel(sistema, moodle, "Sincroniza datos de cursos y usuarios con", "Docker")
+Rel(sistema, mail_service, "Envía notificaciones por", "SMTP")
+
+@enduml

@@ -1,0 +1,44 @@
+@startuml
+!theme plain
+title Diagrama de Despliegue - Ecosistema Docker - FDI DoneSystem
+
+!define CONTAINER_COLOR #E1F5FE
+!define CLOUD_COLOR #F3E5F5
+!define EXTERNAL_COLOR #FFF3E0
+
+package "Docker Host (Servidor Fundación FDI)" <<Device>> #EEEEEE {
+  
+  package "Red Docker: fdi-network" <<Network>> #F5F5F5 {
+  component "Backend API\n(Spring Boot)\nPuerto: 8080" as backend <<Container>> CONTAINER_COLOR
+  database "MySQL Database\n(fdi-db)\nPuerto: 3306" as mysql <<Container>> CONTAINER_COLOR
+  component "Moodle LMS\n(Bitnami)\nPuerto: 80/443" as moodle <<Container>> CONTAINER_COLOR
+  database "MariaDB\n(moodle-db)\nPuerto: 3306" as moodledb <<Container>> CONTAINER_COLOR
+  }
+  
+  note right of backend : Docker Compose\nVolúmenes persistentes\nVariables de entorno
+}
+
+cloud "Netlify CDN" <<Cloud>> CLOUD_COLOR {
+  component "Frontend SPA\n(Angular)\nHTTPS" as frontend
+}
+
+cloud "Internet/APIs Externas" <<External>> EXTERNAL_COLOR {
+  interface "Mercado Pago API\nHTTPS/REST" as mpago
+  interface "SMTP Server\n(Email)" as smtp
+}
+
+' Conexiones internas
+backend -down-> mysql : "JDBC\n3306/TCP"
+backend -right-> moodle : "REST API\nHTTP/8080"
+moodle -down-> moodledb : "SQL\n3306/TCP"
+
+' Conexiones externas
+frontend -down-> backend : "REST API\nHTTPS/443"
+backend -up-> mpago : "Pagos\nHTTPS/443"
+backend -up-> smtp : "Notificaciones\nSMTP/587"
+
+' Notas adicionales
+note bottom of frontend : CI/CD Pipeline\nDeploy automático
+note top of mpago : Webhook callbacks\npara confirmación de pagos
+
+@enduml

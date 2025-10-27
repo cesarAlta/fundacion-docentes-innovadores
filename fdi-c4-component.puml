@@ -1,0 +1,33 @@
+@startuml C4_Component
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Diagrama de Componentes para la API Backend (Spring Boot)
+
+Container(spring_boot_app, "API Backend", "Spring Boot", "Lógica de negocio del sistema.") {
+    Component(api_controller, "API REST Controller", "Spring REST", "Maneja las peticiones HTTP.")
+    Component(auth_jwt_service, "Servicio de Autenticación JWT", "Spring Security, JWT", "Autentica usuarios actualmente. (A migrar a Keycloak)")
+    Component(auth_keycloak_service, "Servicio de Autenticación Keycloak", "Keycloak adapter", "Futura implementación para autenticación centralizada.")
+    Component(pago_service, "Servicio de Pago", "Clases de negocio", "Orquesta las interacciones con Mercado Pago.")
+    Component(moodle_sync_service, "Servicio de Sincronización Moodle", "Cliente WebService", "Se comunica con la API de Moodle.")
+    Component(mail_service_comp, "Servicio de Correo", "Spring Mail Sender", "Envía emails a través de un servicio externo.")
+    Component(repo, "Repositorios JPA", "Spring Data JPA", "Accede y persiste datos en la Base de Datos.")
+}
+
+ContainerDb(mysql_db, "Base de Datos Principal", "MySQL", "Almacena datos del sistema.")
+System_Ext(mercadopago, "Mercado Pago", "Plataforma de pagos externa.")
+System_Ext(mail_service_ext, "Servicio de Correo", "Servicio externo de emails.")
+System_Ext(keycloak_server, "Keycloak Server", "Servidor de autenticación centralizada.")
+
+Rel(api_controller, auth_jwt_service, "Usa para autenticación actual")
+Rel(api_controller, pago_service, "Usa para procesar pagos")
+Rel(api_controller, moodle_sync_service, "Usa para sincronizar datos")
+Rel(api_controller, mail_service_comp, "Usa para enviar emails")
+Rel(repo, mysql_db, "Persiste y lee datos de")
+Rel(auth_jwt_service, repo, "Consulta datos de usuarios en")
+Rel(pago_service, mercadopago, "Integra con la API de")
+Rel(mail_service_comp, mail_service_ext, "Envía emails a través de")
+Rel_Right(api_controller, auth_keycloak_service, "Usa para autenticación futura")
+Rel_Right(auth_keycloak_service, keycloak_server, "Se comunica con")
+
+@enduml
